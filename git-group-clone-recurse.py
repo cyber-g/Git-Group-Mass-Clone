@@ -1,12 +1,33 @@
 #!/usr/bin/env python3
+#
+# git-group-clone-recurse.py
+#
+# Description:
+#   Recursively clone all repositories from a specified GitLab group and its subgroups
+#   into a destination directory. Requires a GitLab access token and group ID.
+#   Optionally, a custom GitLab server and destination directory can be specified.
+#
+# Usage:
+#   ./git-group-clone-recurse.py -s <gitlab-server> -id <group-id> -tok <access-token> -dest <destination-directory>
+#
+#   -s     GitLab server URL (default: gitlab.telecom-paris.fr)
+#   -id    GitLab group ID (required)
+#   -tok   GitLab access token (required)
+#   -dest  Destination directory (default: cloned_projects)
+#
+# Requirements:
+#   - python-gitlab
+#   - git
+#
+# Author: Germain PHAM, cygerpham@free.fr
+# Date: 2025-06-06
+# License: GPL-3.0
+#
 
 import gitlab
 import os
 import subprocess
 import argparse
-
-# Usage: git-group-clone.sh -s <gitlab-server> -id <group-id> -tok <access-token> -dest <destination-directory>
-# -s is optional, if not provided, it defaults to gitlab.telecom-paris.fr
 
 """
 This script clones all GitLab projects within a specified group and its subgroups recursively.
