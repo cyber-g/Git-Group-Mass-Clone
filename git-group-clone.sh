@@ -1,7 +1,30 @@
 #!/bin/bash
-
-# Usage: git-group-clone.sh -s <gitlab-server> -id <group-id> -tok <access-token>
-# -s is optional, if not provided, it defaults to gitlab.telecom-paris.fr
+#
+# git-group-clone.sh
+#
+# Description:
+#   Clone all repositories from a specified GitLab group into the current directory.
+#   The script requires a GitLab access token and group ID. Optionally, a custom GitLab server can be specified.
+#
+# Usage:
+#   ./git-group-clone.sh -s <gitlab-server> -id <group-id> -tok <access-token>
+#
+#   -s   GitLab server URL (default: gitlab.telecom-paris.fr)
+#   -id  GitLab group ID (required)
+#   -tok GitLab access token (required)
+#
+# Requirements:
+#   - curl
+#   - jq
+#   - git
+#
+# Note:
+#   The script must be run in an empty directory.
+#
+# Author: Germain PHAM, cygerpham@free.fr
+# Date: 2025-06-06
+# License: GPL-3.0
+#
 
 # Check if the current directory is empty
 if [ "$(ls -A .)" ]; then
