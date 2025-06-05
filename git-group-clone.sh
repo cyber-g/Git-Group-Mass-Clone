@@ -48,9 +48,7 @@ url_list=`curl --header "PRIVATE-TOKEN: $ACCESS" "https://$GITLAB_SERVER/api/v4/
 echo "List of repository URLs:"
 echo "$url_list"
 
-# Clone each repository
-for url in $url_list; do
+echo "$url_list" | while read -r url; do
     echo "Cloning $url..."
     git clone "$url"
 done
-
