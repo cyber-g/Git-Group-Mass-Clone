@@ -8,12 +8,17 @@
 #   Optionally, a custom GitLab server and destination directory can be specified.
 #
 # Usage:
-#   ./git-group-clone-recurse.py -s <gitlab-server> -id <group-id> -tok <access-token> -dest <destination-directory>
+#   ./git-group-clone-recurse.py -s <gitlab-server> -id <group-id> -tok <access-token> -dest <destination-directory> -no-submodules
 #
 #   -s     GitLab server URL (default: gitlab.telecom-paris.fr)
 #   -id    GitLab group ID (required)
 #   -tok   GitLab access token (required)
 #   -dest  Destination directory (default: cloned_projects)
+#   -no-submodules  Do not clone submodules (optional)
+#          when a submodule cannot be cloned due to permission issues (belonging
+#          outside the group scope), then the entire cloning process of the base
+#          project will fail. This option allows to skip submodule cloning and
+#          get the base project only.
 #
 # Requirements:
 #   - python-gitlab
@@ -43,6 +48,8 @@ parser.add_argument('-tok', '--token', type=str, required=True,
                     help='GitLab private access token for authentication')
 parser.add_argument('-dest', '--destination', type=str, default='cloned_projects',
                     help='Base directory to clone projects into (default: cloned_projects)')
+parser.add_argument('-no-submodules', action='store_true',
+                    help='Do not clone submodules (optional)')
 args = parser.parse_args()
 
 
@@ -68,13 +75,19 @@ def clone_project(project, base_dir):
         print(f"Already cloned: {local_path}")
         # Get into the directory and pull latest changes
         os.chdir(local_path)
-        subprocess.run(["git", "pull", "--recurse-submodules"])
+        if args.no_submodules:
+            subprocess.run(["git", "pull"])
+        else:
+            subprocess.run(["git", "pull", "--recurse-submodules"])
         print(f"Updated {local_path} with latest changes.")
         return
 
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
     print(f"Cloning {repo_url} into {local_path}")
-    subprocess.run(["git", "clone", "--recurse-submodules", repo_url, local_path])
+    if args.no_submodules:
+        subprocess.run(["git", "clone", repo_url, local_path])
+    else:
+        subprocess.run(["git", "clone", "--recurse-submodules", repo_url, local_path])
 
 def process_group(group, base_dir):
     # Clone all projects in the group
